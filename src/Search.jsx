@@ -2,23 +2,39 @@ import React from "react";
 
 let Search = (props) => (
   <div className="search">
-    <input id="input" placeholder="Search..."></input>
-    <button id="searchButton" onClick={(e) => props.updateState(filter(document.getElementById("input").value, props.movies))}>Go!</button>
+    <form>
+      <input id="input" placeholder="Search..."></input>
+      <button id="searchButton" type="submit" onClick={(e) => {
+        e.preventDefault();
+        filterSearch(document.getElementById("input").value);
+      }}>Go!</button>
+    </form>
   </div>
 )
 
-let filter = function(query, movies) {
+let filterSearch = function (query) {
   query = query.trim().toLowerCase();
-  for (let i = 0; i < movies.length; i++) {
-    if (!movies[i].title.toLowerCase().includes(query)) {
-      movies.splice(i, 1);
-      i--;
+  let nodelist = document.getElementsByClassName("movie");
+  for (let i = 0; i < nodelist.length; ++i) {
+    nodelist[i].hidden = false;
+    if (nodelist[i].id === "noResult") {
+      nodelist[i].hidden = true;
     }
   }
-  if (movies.length === 0) {
-    movies.push({title: "No results found"});
+  if (query) {
+    let count = 0;
+    for (let i = 0; i < nodelist.length; ++i) {
+      if (!nodelist[i].childNodes[0].data.toLowerCase().includes(query)) {
+        nodelist[i].hidden = true;
+        if (nodelist[i].id !== "noResult") {
+          ++count;
+        }
+      }
+    }
+    if (nodelist.length - 1 === count) {
+      document.getElementById("noResult").hidden = false;
+    }
   }
-  return movies;
 }
 
 export default Search;
